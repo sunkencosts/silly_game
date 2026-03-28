@@ -1,6 +1,6 @@
 import pygame
 import settings
-from utils.collision import check_collision
+from utils.collision import check_collision, get_collissions, make_rect
 from entities.base import Entity
 
 
@@ -9,16 +9,22 @@ class Player(Entity):
         super().__init__()
         self.pos = pygame.Vector2(pos)
 
+    @property
+    def rect(self):
+        return make_rect(self.pos, settings.PLAYER_RADIUS)
+
     def update(self, dt, game_state):
         keys = pygame.key.get_pressed()
         wall_rects = [e.rect for e in game_state.get_walls()]
+        explosions = game_state.get_explosions()
+
         new_pos = pygame.Vector2(self.pos)
         if keys[pygame.K_a]:
             new_pos.x -= settings.PLAYER_SPEED * dt
         if keys[pygame.K_d]:
             new_pos.x += settings.PLAYER_SPEED * dt
 
-        if not check_collision(new_pos, wall_rects):
+        if not check_collision(make_rect(new_pos, settings.PLAYER_RADIUS), wall_rects):
             self.pos.x = new_pos.x
 
         new_pos = pygame.Vector2(self.pos)
@@ -26,8 +32,12 @@ class Player(Entity):
             new_pos.y -= settings.PLAYER_SPEED * dt
         if keys[pygame.K_s]:
             new_pos.y += settings.PLAYER_SPEED * dt
-        if not check_collision(new_pos, wall_rects):
+        if not check_collision(make_rect(new_pos, settings.PLAYER_RADIUS), wall_rects):
             self.pos.y = new_pos.y
+
+        hit = get_collissions(self.rect, explosions)
+        if hit:
+            print(f"Player hit by {len(hit)} explosion(s)!")
 
         # then clamp to screen at the end
         player_rect = pygame.Rect(

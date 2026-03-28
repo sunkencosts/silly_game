@@ -2,14 +2,19 @@ import pygame
 import settings
 
 
-def check_collision(pos: pygame.Vector2, wall_rects) -> bool:
-    player_rect = pygame.Rect(
-        pos.x - settings.PLAYER_RADIUS,
-        pos.y - settings.PLAYER_RADIUS,
-        settings.PLAYER_RADIUS * 2,
-        settings.PLAYER_RADIUS * 2,
+def make_rect(pos: pygame.Vector2, radius: int):
+    return pygame.Rect(
+        pos.x - radius,
+        pos.y - radius,
+        radius * 2,
+        radius * 2,
     )
-    for wr in wall_rects:
-        if player_rect.colliderect(wr):
-            return True
-    return False
+
+
+def check_collision(rect_a: pygame.Rect, rects: list) -> bool:
+    return any(rect_a.colliderect(r) for r in rects)
+
+
+def get_collissions(rect_a: pygame.Rect, entities: list) -> list:
+    """Returns all entities whose rect overlaps rect_a"""
+    return [e for e in entities if rect_a.colliderect(e.rect)]
