@@ -15,6 +15,28 @@ def get_circle_rects(player_pos, count):
         y = player_pos.y + (i*100)
         rects.append(pygame.Rect(x-10,y-10,20,20))
     return rects    
+
+class Explosion:
+    DURATION = 0.2 #seconds
+   
+    def __init__(self, postition:pygame.Vector2 ):
+        self.position = pygame.Vector2(postition)
+        self.elapsed = 0
+        self.color = "orange"
+        
+    
+    def is_dead(self):
+        return self.elapsed >= self.DURATION 
+    def update(self, dt):
+        self.elapsed += dt
+    def get_radius(self):
+        progress = self.elapsed / self.DURATION
+        return int(progress * 80)
+    
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color,self.position, self.get_radius())
+   
+    
     
 
 # pygame setup
@@ -29,6 +51,8 @@ pygame.display.set_caption("Silly Game")
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 count = 3
 wall_rects = [pygame.Rect(100 * i, 100, 50, 25) for i in range (10)]
+explosions = []
+space_was_pressed = False
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
@@ -57,6 +81,13 @@ while running:
     if not check_collision(get_circle_rects(new_pos, count), wall_rects):
         player_pos.y = new_pos.y
     
+    if keys[pygame.K_SPACE] and not space_was_pressed:
+        explosions.append(Explosion(player_pos))
+    space_was_pressed = keys[pygame.K_SPACE]
+        
+    for explosion in explosions:
+        explosion.update(dt)
+    explosions = [e for e in explosions if not e.is_dead()]
     
     # Draw after know positions
     # fill the screen with a color to wipe away anything from last frame
@@ -70,6 +101,10 @@ while running:
     
     for rect in wall_rects:
         pygame.draw.rect(screen, "white", rect)
+    
+    for explosion in explosions:
+        explosion.draw(screen)
+        
 
     # flip() the display to put your work on screen
     pygame.display.flip()
