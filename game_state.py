@@ -12,6 +12,7 @@ class GameState:
         self.entities = []
         self.screen = screen
         self.pickup_timer = self.pickup_interval = 1
+        self.score = 0
 
     def get_walls(self):
         return [e for e in self.entities if e.solid]

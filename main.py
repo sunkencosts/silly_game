@@ -14,6 +14,7 @@ clock = pygame.time.Clock()
 pygame.display.set_caption("Silly Game")
 
 game_state = GameState(screen)
+font = pygame.font.SysFont("Arial", 36)
 
 starting_position = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 player = Player(starting_position)
@@ -45,6 +46,11 @@ while running:
 
     # Draw
     game_state.screen.fill("black")
+
+    text_surface = font.render(f"Score {game_state.score}", True, "white")
+    text_rect = text_surface.get_rect()
+    text_rect.left = 10
+    screen.blit(text_surface, text_rect)
 
     for entity in game_state.entities:
         entity.draw(game_state.screen)

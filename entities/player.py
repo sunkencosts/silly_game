@@ -50,6 +50,7 @@ class Player(Entity):
         if onPickups:
             print(f"Player on pickup! Give POWER!")
             self.size_modifier += 1
+            game_state.score += 1
             for pickup in onPickups:
                 pickup.dead = True
 
