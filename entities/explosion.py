@@ -16,7 +16,7 @@ class Explosion(Entity):
     def rect(self):
         return make_rect(self.position, self.get_radius())
 
-    def update(self, dt, game_state):
+    def update(self, dt, _):
         self.elapsed += dt
         if self.elapsed >= self.DURATION:
             self.dead = True
